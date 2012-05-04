@@ -1,11 +1,4 @@
-module SPI_LCD_top(
-output 			MOSI,
-input			MISO,
-output			SS,
-output			SCLK,
-);
-endmodule
-module control(
+module Controller(
 input		clk,
 output		dataRdy,
 input		transEna,
