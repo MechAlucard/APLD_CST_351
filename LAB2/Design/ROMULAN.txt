@@ -1,0 +1,39 @@
+1B //ESC
+5B //'['
+30 //'0' display off, backlight off
+65 //'e' display on/off ^
+1B //ESC
+5B //'['
+30 //'0'
+6A //'j' clear display, home cursor
+1B //ESC
+5B //'['
+30 //'0'
+63 //'c' cursor off
+1B //ESC
+5B //'['
+30 //'0'
+68 //'h' line wrap 16 char
+20 //' '
+1B //ESC
+5B //'['
+30 //'0' row
+3B //';'
+30 //'0' col
+48 //'H' set cursor to row col 
+20 //' '
+54 //'T'
+79 //'y'
+6c //'l'
+65 //'e'
+72 //'r'
+20 //' '
+4d //'M'
+61 //'a'
+72 //'r'
+74 //'t'
+69 //'i'
+6e //'n'
+
+
+
