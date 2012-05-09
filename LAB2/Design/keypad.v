@@ -16,7 +16,7 @@ module keypad(
 input clk,
 input [3:0] keyrow,
 output [3:0] keycolumn,
-output [3:0] Dout,
+output [5:0] Dout,
 output Data_ena);
 wire KEN,SEN;
 wire [2:0] count;
@@ -39,12 +39,8 @@ keylatch u3(
 .column(count),
 .row(keyrow),
 .clk(clk),
-.key(key),
+.key(Dout),
 .SEN(SEN));
-
-keycode u4(
-.key(key),
-.out(Dout));
 
 endmodule
 // Oregon Institute of Technology 
@@ -121,40 +117,6 @@ endmodule
 // Oregon Institute of Technology 
 // Engineer: Tyler Martin
 // Create Date: 04/17/2012 
-// Design Name: Keyencoder
-// Module Name: keycode
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: translates keycodes to a number
-module keycode(
-input [5:0]key,
-output reg [3:0]out);
-always @ (key)
-begin
-	case(key)
-	6'b000111:out=4'd1;
-	6'b001011:out=4'd2;
-	6'b001101:out=4'd3;
-	6'b001110:out=4'd10;
-	6'b010111:out=4'd4; 
-	6'b011011:out=4'd5;
-	6'b011101:out=4'd6;
-	6'b011110:out=4'd11;
-	6'b100111:out=4'd7;
-	6'b101011:out=4'd8;
-	6'b101101:out=4'd9;
-	6'b101110:out=4'd12;
-	6'b110111:out=4'd15;
-	6'b111011:out=4'd0;
-	6'b111101:out=4'd13;
-	6'b111110:out=4'd14;
-	default:out=4'd15;//clear	
-	endcase
-end
-endmodule
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
 // Design Name: Key read
 // Module Name: Key_read
 // Project Name: CST 351 – Lab 1
@@ -190,8 +152,6 @@ end
 
 endmodule
 
-
-endmodule
 
 // Oregon Institute of Technology 
 // Engineer: Tyler Martin

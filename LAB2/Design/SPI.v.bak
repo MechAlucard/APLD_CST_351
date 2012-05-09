@@ -7,6 +7,7 @@
 // Target Devices: EPM2210F324C3N
 // Description: basic SPI interface for outputing data
 // sends data on the negative edge of the clock and samples on the positive edge
+
 SPI(
 input		MISO,
 output		MOSI,
@@ -15,7 +16,8 @@ output		SCLK,
 input		clk,
 input		data_ready,
 output		INT,
-input[7:0]	send_data);
+input[7:0]	send_data
+);
 wire 		load_w;
 
 shift_reg8 U0(
@@ -95,7 +97,14 @@ begin
 	endcase
 end
 endmodule
-
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 05/07/2012 
+// Design Name: SPI
+// Module Name: shift_reg8 
+// Project Name: CST 351 – Lab 2.4
+// Target Devices: EPM2210F324C3N
+// Description: basic 8 bit shift register with synchonus load
 module shift_reg8(
 input [7:0] 	d,
 output reg		so,

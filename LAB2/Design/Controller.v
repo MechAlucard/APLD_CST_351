@@ -11,48 +11,62 @@ module Controller(
 input				clk,
 output reg			dataRdy,
 input				transEna,
-output reg [7:0]	data
+output reg [7:0]	data,
+input 		[6:0]	address_key,
+input				key_press
 );
 //ROM
-reg[7:0] rom1 [0:36];
+reg[7:0] rom1 [0:77];
 initial
 begin
 	$readmemh("ROMULAN.txt",rom1);
 end
 
 reg [3:0]		state;
-reg [5:0]		address;
-
+reg [6:0]		address;
 parameter 		s_start = 0,
-				s_send_data = 1,
-				s_next = 2,
-				s_end = 3;
-				
+				s_ready = 1,
+				s_send_data = 2,
+				s_next = 3,
+				s_key_wait = 4;
 always @ (negedge clk)
 begin
 	case(state)
-	s_start: begin state = s_send_data; address = 0; end
-	s_send_data:begin state = s_next; address = address;end
-	s_next:
-	begin
-		if(transEna)
+		s_start: begin state = s_send_data; address = 0; end
+		s_send_data:
+			begin 
+			state = s_next;
+			address = address;
+			end
+		s_next:
 		begin
-			if(address == 6'd37)begin state = s_end; address = address; end
-			else begin state = s_send_data; address = address +1; end
+			if(transEna)
+			begin
+				if(rom1[address+1] == 0)begin state = s_key_wait; address = address; end
+				else begin state = s_send_data; address = address +1; end
+			end
+			else begin state = state; address = address; end
 		end
-		else begin state = state; address = address; end
-	end
-	s_end: begin state = state; address = address; end
-	default: state = s_start;
-	endcase
-end
+		s_key_wait: 
+		begin 
+			if(key_press)
+				begin
+				state = s_send_data; 
+				address = address_key; 
+				end
+			else
+				begin
+				state = state;
+				address = address;
+				end
+		end
+			default:begin state = s_start; address = address; end
+	endcase				
+end				
 always @ (*)
 begin
 	case(state)
-	s_start:begin data = rom1[address]; dataRdy = 0; end
 	s_send_data:begin data = rom1[address]; dataRdy = 1; end
-	s_next:begin data = rom1[address]; dataRdy = 0; end
-	s_end:begin	data = rom1[address]; dataRdy = 0; end
 	default:begin data = rom1[address]; dataRdy = 0; end
 	endcase
 end

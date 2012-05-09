@@ -7,7 +7,8 @@
 // Target Devices: EPM2210F324C3N
 // Description: basic SPI interface for outputing data
 // sends data on the negative edge of the clock and samples on the positive edge
-SPI(
+
+module SPI(
 input		MISO,
 output		MOSI,
 output		SS,
@@ -15,7 +16,8 @@ output		SCLK,
 input		clk,
 input		data_ready,
 output		INT,
-input[7:0]	send_data);
+input[7:0]	send_data
+);
 wire 		load_w;
 
 shift_reg8 U0(

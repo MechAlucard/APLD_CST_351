@@ -7,74 +7,16 @@
 // Target Devices: EPM2210F324C3N
 // Description: Top level module that uses the keypad to enter in data
  
+
+//(*chip_pin="J6"*)input clkin,
+//(*chip_pin="D4,C2,D1,B4"*)input [4:1] keyrow,
+//(*chip_pin="J3,G4,F4,E4"*)output [3:0] keycolumn
+
 module keypad(
-(*chip_pin="J6"*)input clkin,
-(*chip_pin="D4,C2,D1,B4"*)input [4:1] keyrow,
-//output [3:0] key,
-//output KEN,SEN,data_ena,
-//output  [3:0] out,a,b,c,
-//output [1:0] count,
-(*chip_pin="J3,G4,F4,E4"*)output [3:0] keycolumn,
-(*chip_pin="A4"*)output com_1,
-(*chip_pin="A5"*)output com_2,
-(*chip_pin="B7"*)output com_3,
-(*chip_pin="B8"*)output seg_A,
-(*chip_pin="B9"*)output seg_B,
-(*chip_pin="A10"*)output seg_C,
-(*chip_pin="B11"*)output seg_D,
-(*chip_pin="B12"*)output seg_E,
-(*chip_pin="B13"*)output seg_F,
-(*chip_pin="B14"*)output seg_G,
-(*chip_pin="B15"*)output dp);
-//(*chip_pin="V14,U14,V15,U15"*)input [4:1]button,
-//(*chip_pin="U4,V4,U5,V5,V12,U12,V13,U13"*)output [7:0]led);
-wire [3:0] a,b,c;
-wire [3:0] key;
-wire KEN,data_ena,clk;
-wire [1:0] count;
-
-f_divider u0(
-.in(clkin),
-.out(clk));
-
-dispcontrol u1(
-.in(key),
-.clk(clk),
-.ena(data_ena),
-.a(a),
-.b(b),
-.c(c));
-
-keypad_4x4 u2(
-.clk(clk),
-.keyrow(keyrow),
-.keycolumn(keycolumn),
-.Dout(key),
-.Data_ena(data_ena));
-
-MUX_DISP u3(
-.A(a),
-.B(b),
-.C(c),
-.clk(clk),
-.com_1(com_1),
-.com_2(com_2),
-.com_3(com_3),
-.seg_A(seg_A),
-.seg_B(seg_B),
-.seg_C(seg_C),
-.seg_D(seg_D),
-.seg_E(seg_E),
-.seg_F(seg_F),
-.seg_G(seg_G));
-assign dp = 1'b0;
-endmodule
-
-module keypad_4x4(
 input clk,
 input [3:0] keyrow,
 output [3:0] keycolumn,
-output [3:0] Dout,
+output [5:0] Dout,
 output Data_ena);
 wire KEN,SEN;
 wire [2:0] count;
@@ -97,12 +39,12 @@ keylatch u3(
 .column(count),
 .row(keyrow),
 .clk(clk),
-.key(key),
+.key(Dout),//key),
 .SEN(SEN));
 
-keycode u4(
-.key(key),
-.out(Dout));
+//keycode u4(
+//.key(key),
+//.out(Dout));
 
 endmodule
 // Oregon Institute of Technology 
@@ -179,60 +121,6 @@ endmodule
 // Oregon Institute of Technology 
 // Engineer: Tyler Martin
 // Create Date: 04/17/2012 
-// Design Name: display control
-// Module Name: dispcontrol
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: shift buffer for displaying key data
-module dispcontrol(
-input clk,ena,
-input [3:0] in,
-output reg [3:0] a,b,c);
-always @ ( negedge clk)
-begin
-	if(ena)
-	{a,b,c}={b,c,in};
-	else
-	{a,b,c}={a,b,c};
-end
-endmodule
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: Keyencoder
-// Module Name: keycode
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: translates keycodes to a number
-module keycode(
-input [5:0]key,
-output reg [3:0]out);
-always @ (key)
-begin
-	case(key)
-	6'b000111:out=4'd1;
-	6'b001011:out=4'd2;
-	6'b001101:out=4'd3;
-	6'b001110:out=4'd10;
-	6'b010111:out=4'd4; 
-	6'b011011:out=4'd5;
-	6'b011101:out=4'd6;
-	6'b011110:out=4'd11;
-	6'b100111:out=4'd7;
-	6'b101011:out=4'd8;
-	6'b101101:out=4'd9;
-	6'b101110:out=4'd12;
-	6'b110111:out=4'd15;
-	6'b111011:out=4'd0;
-	6'b111101:out=4'd13;
-	6'b111110:out=4'd14;
-	default:out=4'd15;//clear	
-	endcase
-end
-endmodule
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
 // Design Name: Key read
 // Module Name: Key_read
 // Project Name: CST 351 – Lab 1
@@ -268,217 +156,6 @@ end
 
 endmodule
 
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: Mux Display
-// Module Name: MUX_DISP
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: displays data in buffers to display
-module MUX_DISP(
-input [3:0]A,B,C,
-input clk,
-output com_1,com_2,com_3,
-output seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G);
-wire ena;
-wire [1:0]counter;
-wire [3:0]A_out,B_out,C_out,data;
-
-controller U1 (
-.clk(clk),
-.COM_1(com_1),
-.COM_2(com_2),
-.COM_3(com_3),
-.ena(ena),
-.count(counter));
-
-latch3_4bits U2 (
-.A(A),
-.B(B),
-.C(C),
-.clk(clk),
-.ena(ena),
-.A_out(A_out),
-.B_out(B_out),
-.C_out(C_out));
-
-A4to1MUX U3 (
-.A(A_out),
-.B(B_out),
-.C(C_out),
-.sel(counter),
-.out(data));
-
-BCD_to_7seg U4 (
-.A(data),
-.seg_A(seg_A),
-.seg_B(seg_B),
-.seg_C(seg_C),
-.seg_D(seg_D),
-.seg_E(seg_E),
-.seg_F(seg_F),
-.seg_G(seg_G));
-
-
-endmodule
-
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: muxdisplay
-// Module Name: controller
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: pulls collector low in sync with count
-module controller(
-input clk,
-output [1:0] count,
-output COM_1,COM_2,COM_3,ena);
-counter U1 (
-.clk(clk),
-.count(count));
-decode_cnt U2 (
-.count(count),
-.ena(ena),
-.COM_1(COM_1),
-.COM_2(COM_2),
-.COM_3(COM_3));
-
-
-endmodule
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: Muxdisplay
-// Module Name: latch3_4bits
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: latches data for the display
-module latch3_4bits(
-input [3:0]A,B,C,
-input clk,ena,
-output reg [3:0]A_out,B_out,C_out);
-
-always @ (posedge clk)
-begin
-	if (!ena)
-		begin
-		{A_out,B_out,C_out}={A,B,C};
-		end
-	else
-		begin
-		{A_out,B_out,C_out}={A_out,B_out,C_out};
-		end
-end	
-endmodule
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: Muxdisplay
-// Module Name: A4to1MUX
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: puts out a digit based on count
-module A4to1MUX(
-input [3:0] A,B,C,
-input [1:0] sel,
-output reg [3:0] out);
-
-always @ (sel)
-begin
-	case(sel)
-		1: out = A;
-		2: out = B;
-		3: out = C;
-		default: out = 1'bx;
-	endcase
-end
-endmodule
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: Muxdisplay
-// Module Name: BCD_to_7seg
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: decodes the key number to 7seg display
-module BCD_to_7seg(
-input [3:0]A,
-output reg seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G
-);
-always @ (A)
-begin
-	case(A)
-		0: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1111110;
-		1: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b0110000;
-		2: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1101101;
-		3: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1111001;
-		4: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b0110011;
-		5: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1011011;
-		6: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1011111;
-		7: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1110000;
-		8: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1111111;
-		9: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1110011;
-		10:{seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1000001;
-		11:{seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b0001001;
-		12:{seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b0000001;
-		13:{seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b0110111;
-		14:{seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b1001111;
-		15:{seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b0000000;
-		default: {seg_A,seg_B,seg_C,seg_D,seg_E,seg_F,seg_G}= 7'b0000000;
-	endcase
-end
-
-endmodule
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: Muxdisplay
-// Module Name: counter
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: picks which segment to display 
-module counter(
-input clk,
-output reg[1:0]count);
-always @ (posedge clk)
-begin
-	case(count)
-		0: count = 2'b01;
-		1: count = 2'b10;
-		2: count = 2'b11;
-		3: count = 2'b00;
-		default: count = 2'b00;
-	endcase
-end
-endmodule 
-
-// Oregon Institute of Technology 
-// Engineer: Tyler Martin
-// Create Date: 04/17/2012 
-// Design Name: Muxdisplay
-// Module Name: decode_cnt
-// Project Name: CST 351 – Lab 1
-// Target Devices: EPM2210F324C3N
-// Description: pulls down digit based on count
-module decode_cnt(
-input [1:0]count,
-output reg ena,
-output reg COM_1,COM_2,COM_3);
-
-always @ (count)
-begin
-	case(count)
-		0: {COM_1,COM_2,COM_3,ena} = 4'b1110;
-		1: {COM_1,COM_2,COM_3,ena} = 4'b0111;
-		2: {COM_1,COM_2,COM_3,ena} = 4'b1011;
-		3: {COM_1,COM_2,COM_3,ena} = 4'b1101;
-		default: {COM_1,COM_2,COM_3,ena} = 4'b1111;
-	endcase
-end
-
-endmodule
 
 // Oregon Institute of Technology 
 // Engineer: Tyler Martin
