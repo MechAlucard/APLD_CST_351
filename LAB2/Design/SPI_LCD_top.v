@@ -1,3 +1,12 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 05/08/2012 
+// Design Name: SPI_LCD_top
+// Module Name: SPI_LCD_top 
+// Project Name: CST 351 – Lab 2
+// Target Devices: EPM2210F324C3N
+// Description: Top level module that integrating keypad and SPI display
+
 module SPI_LCD_top(
 (*chip_pin = "E17"*)output 			MOSI,
 (*chip_pin = "G17"*)input			MISO,
