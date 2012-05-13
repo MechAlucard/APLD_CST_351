@@ -13,7 +13,7 @@ output reg CLK_1K
 );
 
 reg[14:0] count;
-
+initial begin CLK_1K = 0; count = 0;end
 always@(posedge CLK)
 begin
 	if(count == 25000)

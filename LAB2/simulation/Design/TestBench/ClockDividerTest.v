@@ -1,3 +1,10 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 04/17/2012 
+// Design Name: Clockdivider testbench
+// Project Name: CST 351 – Lab 2
+// Target Devices: EPM2210F324C3N
+// Description: test bench for clock divider
 `timescale 1 ns /100 ps //timeunit = 1ns, precision = 1/10ns
 module ClockDividerTest();
 reg			CLK;

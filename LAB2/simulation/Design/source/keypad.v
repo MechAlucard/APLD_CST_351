@@ -19,7 +19,7 @@ output [3:0] keycolumn,
 output [5:0] Dout,
 output Data_ena);
 wire KEN,SEN;
-wire [2:0] count;
+wire [1:0] count;
 wire [5:0] key;
 
 Key_read u1(
@@ -57,6 +57,12 @@ input clk,KEN,
 output reg SEN,data_ena);
 reg [1:0] state,nstate;
 parameter start=2'b00,read=2'b01,hold=2'b10,send=2'b11;
+initial begin 
+  SEN = 0;
+  data_ena = 0;
+  state = 0;
+  nstate = 0;
+end
 always @ (posedge clk)
 begin
 	state = nstate;
@@ -105,6 +111,7 @@ input [1:0] column,
 input [3:0] row,
 input clk,SEN,
 output reg [5:0] key);
+initial begin key = 0; end
 always @ (posedge clk)
 begin
 if(SEN)
@@ -128,7 +135,7 @@ input clk,
 output KEN,
 output reg [1:0]count,
 output reg [3:0]column);
-
+initial begin count = 0; column = 0; end
 assign KEN = &row;
 always @ (posedge clk )//or posedge KEN)
 begin
@@ -165,7 +172,7 @@ module f_divider(
 input in,
 output reg out);
 reg [15:0]count;
-
+initial begin count = 0; end
 always @ (posedge in)
 begin
 	count <= count + 1;

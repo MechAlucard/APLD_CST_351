@@ -29,6 +29,12 @@ parameter 		s_start = 0,
 				s_send_data = 2,
 				s_next = 3,
 				s_key_wait = 4;
+initial begin
+  dataRdy = 0;
+  data = 0;
+  state = 0;
+  address = 0;
+end
 always @ (negedge clk)
 begin
 	case(state)
