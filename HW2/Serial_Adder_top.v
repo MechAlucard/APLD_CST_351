@@ -24,12 +24,14 @@ serial_adder U2(
 .b(b_w),
 .CLK(CLK_w),
 .Sum(sum_w),
-.c_out(Cout));
+.c_out(Cout),
+.CLR(Start));
 
 shift_reg_8bit U3(
 .S_in(sum_w),
 .CLK(CLK_w),
-.Data_out(Sum));
+.Data_out(Sum),
+.CLR(Start));
 
 control U4(
 .CLK(CLK),
@@ -73,7 +75,7 @@ begin
 		state = Shifting;
 	end
 	Shifting:
-		if(count < 7)
+		if(count < 8)
 		begin
 			count = count +1;
 			state = state;
@@ -100,6 +102,7 @@ module serial_adder(
 input			a,
 input			b,
 input			CLK,
+input   CLR,
 output reg		Sum,
 output reg		c_out
 );
@@ -109,10 +112,15 @@ c_in = 0;
 c_out = 0;
 Sum = 0;
 end
-always @ (negedge CLK)
+always @ (negedge CLK or posedge CLR)
 begin
-	{c_out,Sum} <= a + b + c_in;
-	c_in <=c_out;
+  if(CLR)
+      {c_out,Sum} = 0;
+  else
+  begin
+	{c_out,Sum} = a + b + c_in;
+	c_in =c_out;
+	end
 end
 endmodule
 
@@ -120,11 +128,14 @@ endmodule
 module shift_reg_8bit(
 input	       		S_in,
 input          		CLK,
+input           CLR,
 output reg [7:0]    Data_out
 );
 initial begin Data_out = 0; end
-always @ (posedge CLK)
+always @ (negedge CLK or posedge CLR)
 begin
+  if(CLR)
+    Data_out = 0;
   Data_out = {S_in,Data_out[7:1]};
 end  
 endmodule
@@ -134,19 +145,17 @@ input [7:0]		Data_A,
 input [7:0]		Data_B,
 input			CLK,
 input			Load,
-output reg		A,
-output reg		B
+output 		A,
+output 		B
 );
 reg [7:0]		Data_A_reg;
 reg	[7:0]		Data_B_reg;
 initial begin  
 Data_A_reg = 0;
 Data_B_reg = 0;
-A = 0;
-B = 0;
 end
 
-always @ (posedge CLK or posedge Load)
+always @ (negedge CLK or posedge Load)
 begin
 	if(Load)
 	begin
@@ -154,8 +163,8 @@ begin
 	end
 	else
 	begin
-		{Data_A_reg,Data_B_reg} = {Data_A_reg[6:0],1'b0,Data_B_reg[6:0],1'b0};
+		{Data_A_reg,Data_B_reg} = {1'b0,Data_A_reg[7:1],1'b0,Data_B_reg[7:1]};
 	end
-  {A,B} = {Data_A_reg[7],Data_B_reg[7]};
 end
+assign {A,B} = {Data_A_reg[0],Data_B_reg[0]};
 endmodule 
