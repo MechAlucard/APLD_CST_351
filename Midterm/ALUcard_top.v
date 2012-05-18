@@ -72,7 +72,10 @@ begin
 		end
 		LOAD:
 		begin
-			state = READY;
+		  if(!GO)
+			   state = READY;
+			else
+			  state = state;
 		end
 		READY:
 		begin
