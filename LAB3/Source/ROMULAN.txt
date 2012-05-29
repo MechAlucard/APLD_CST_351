@@ -1,0 +1,63 @@
+1B //ESC
+5B //'['
+30 //'0' display off, backlight off
+65 //'e' display on/off ^
+1B //ESC
+5B //'['
+30 //'0'
+6A //'j' clear display, home cursor
+1B //ESC
+5B //'['
+30 //'0'
+63 //'c' cursor off
+1B //ESC
+5B //'['
+30 //'0'
+68 //'h' line wrap 16 char
+20 //' '
+1B //ESC
+5B //'['
+30 //'0' row
+3B //';'
+30 //'0' col
+48 //'H' set cursor to row col 
+50 //'P'
+69 //'i'
+63 //'c'
+6B //'k'
+20 //' '
+49 //'I'
+74 //'t'
+65 //'e'
+6D //'m'
+00
+@16 //Candy
+43
+61
+6E
+64
+79
+00
+@16 //Cookies
+43
+6F
+6F
+6B
+69
+65
+73
+00
+@16 //Chips
+43
+68
+69
+70
+73
+00
+@16 //Gum
+47
+75
+6D
+00
+
+
