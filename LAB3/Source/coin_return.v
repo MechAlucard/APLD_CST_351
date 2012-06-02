@@ -2,7 +2,7 @@ module coin_return(
 input		[7:0]	coins,
 input				clk,
 input				start,
-input    reset,
+input    			reset,
 output	reg			active,
 output	reg			done,
 output	reg			quarter_return,
@@ -25,7 +25,7 @@ parameter			IDLE = 0,
 					DEC_NICKEL = 3,
 					WAIT = 4,
 					DONE = 5;
-always @ (posedge clk or posedge reset)
+always @ (posedge clk or posedge reset or posedge start)
 begin
 if(reset)
   state = IDLE;
@@ -83,7 +83,7 @@ else
 		default:
 		begin
 			state = IDLE;
-			coin_count = coin_count;
+			coin_count = 0;
 		end
 		endcase
 end

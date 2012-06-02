@@ -61,7 +61,7 @@ begin
 		6'b110111:
 		begin
 		state = CLEAR;
-		key1 = key1;
+		key1 = 0;
 		end
 		default:
 		begin
@@ -127,7 +127,7 @@ begin
 		6'b110111:
 		begin
 			state = CLEAR;
-			key1 = key1;
+			key1 = 0;
 		end
 		default:
 		begin
@@ -242,7 +242,7 @@ case(state)
 		gum = 0;
 		reset_out = 0;
 		end
-		8'b01000011:
+		8'b00110100:
 		begin
 		candy = 0;
 		cookies = 0;

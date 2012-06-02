@@ -29,7 +29,7 @@ parameter			IDLE = 0,
 					ADD100 = 5,
 					DONE = 6;
 					
-always @ (posedge clk or posedge quarter_in or posedge dime_in or posedge nickel_in or posedge reset)
+always @ (posedge clk or posedge reset)
 begin
 	if(reset)
 		state = IDLE;

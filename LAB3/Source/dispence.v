@@ -5,6 +5,8 @@ input				gum,
 input				candy,
 input				cookies,
 input				chips,
+input				ack,
+output	reg			hold,
 input		[7:0]	coins,
 output	reg			subtract,
 output	reg			gum_dispence,
@@ -19,7 +21,8 @@ parameter			IDLE = 0,
 					COOKIES = 3,
 					CHIPS = 4,
 					SUB	= 5,
-					DONE = 6;
+					DONE = 6,
+					WAIT = 7;
 initial begin
 	subtract = 0;
 	gum_dispence = 0;
@@ -47,34 +50,41 @@ begin
 		GUM:
 		begin
 		if(coins >= 50)
-			state = SUB;
+			state = WAIT;
 		else
 			state = state;
 		end
 		CANDY:
 		begin
 		if(coins >= 75)
-			state = SUB;
+			state = WAIT;
 		else
 			state = state;
 		end
 		COOKIES:
 		begin
 		if(coins >= 65)
-			state = SUB;
+			state = WAIT;
 		else
 			state = state;
 		end
 		CHIPS:
 		begin
 		if(coins >= 85)
+			state = WAIT;
+		else
+			state = state;
+		end
+		WAIT:
+		begin
+		if(ack)
 			state = SUB;
 		else
 			state = state;
 		end
 		SUB:
 		begin
-		state = DONE;
+			state = DONE;
 		end
 		DONE:
 		begin
@@ -97,6 +107,7 @@ begin
 		cookies_dispence = 0;
 		chips_dispence = 0;
 		done = 0;
+		hold = 0;
 		end
 		GUM:
 		begin
@@ -106,6 +117,7 @@ begin
 		cookies_dispence = 0;
 		chips_dispence = 0;
 		done = 0;
+		hold = 0;
 		end
 		CANDY:
 		begin
@@ -115,6 +127,7 @@ begin
 		cookies_dispence = 0;
 		chips_dispence = 0;
 		done = 0;
+		hold = 0;
 		end
 		COOKIES:
 		begin
@@ -124,6 +137,7 @@ begin
 		cookies_dispence = 1;
 		chips_dispence = 0;
 		done = 0;
+		hold = 0;
 		end
 		CHIPS:
 		begin
@@ -133,6 +147,17 @@ begin
 		cookies_dispence = 0;
 		chips_dispence = 1;
 		done = 0;
+		hold = 0;
+		end
+		WAIT:
+		begin
+		subtract = 0;
+		gum_dispence = gum_dispence;
+		candy_dispence = candy_dispence;
+		cookies_dispence = cookies_dispence;
+		chips_dispence = chips_dispence;
+		done = 0;
+		hold = 1;
 		end
 		SUB:
 		begin
@@ -142,6 +167,7 @@ begin
 		cookies_dispence = cookies_dispence;
 		chips_dispence = chips_dispence;
 		done = 0;
+		hold = 0;
 		end
 		DONE:
 		begin
@@ -151,6 +177,7 @@ begin
 		cookies_dispence = 0;
 		chips_dispence = 0;
 		done = 1;
+		hold = 0;
 		end
 		default:
 		begin
@@ -159,6 +186,7 @@ begin
 		candy_dispence = 0;
 		cookies_dispence = 0;
 		chips_dispence = 0;
+		hold = 0;
 		end
 		endcase
 	
