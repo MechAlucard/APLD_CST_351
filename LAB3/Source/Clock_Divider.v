@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: Clock_divider
+// Module Name: Clock_divider
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: divides the clock from 50MHz to 1KHz
 module Clock_Divider(
 input				CLK_in,
 output				Scan_clk,
@@ -7,7 +15,7 @@ keyscan_div U1(
 .CLK_in(CLK_in),
 .ena(1),
 .CLK_out(Scan_clk));
-
+/*
 PWM_unit U2(
 .CLK_in(CLK_in),
 .ena(1),
@@ -17,6 +25,7 @@ Baud_clk U3(
 .CLK_in(CLK_in),
 .ena(1),
 .CLK_out(Baud_clk));
+*/
 endmodule
 
 module keyscan_div(
@@ -96,7 +105,7 @@ begin
 	begin
 	count = count + 1;
 	end
-	if(count >= 163)
+	if(count >= 163)//163)
 	begin
 	count = 0;
 	CLK_out = ~CLK_out;

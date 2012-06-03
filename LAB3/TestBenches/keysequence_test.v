@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: keysequence_test
+// Module Name: keysequence
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: tests the sequence detector
 `timescale 1 ns /100 ps
 module keysequence_test;
 reg		[5:0]		key;

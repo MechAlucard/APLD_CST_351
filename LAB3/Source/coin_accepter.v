@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: Coin_accepter
+// Module Name: Coin_accepter
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: accepts coins and detrimins the value
 module coin_accepter(
 input				reset,
 input				clk,

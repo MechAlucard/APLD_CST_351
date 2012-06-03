@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: Coin_return
+// Module Name: Coin_return
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: returns coins in the reg on start
 module coin_return(
 input		[7:0]	coins,
 input				clk,
@@ -25,10 +33,13 @@ parameter			IDLE = 0,
 					DEC_NICKEL = 3,
 					WAIT = 4,
 					DONE = 5;
-always @ (posedge clk or posedge reset or posedge start)
+always @ (posedge clk or posedge reset)// or posedge start)
 begin
 if(reset)
+begin
   state = IDLE;
+  coin_count = 0;
+end
 else
 	case(state)
 		IDLE:

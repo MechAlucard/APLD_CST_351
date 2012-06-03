@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: coin_reg_test
+// Module Name: coin_reg_test
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: tests adding and subtractin on the reg
 `timescale 1 ns /100 ps
 module coin_reg_test;
 reg				reset;

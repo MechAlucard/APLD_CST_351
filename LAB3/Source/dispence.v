@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: dispence
+// Module Name: dispence
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: sends signals to subtract money from the coin reg
 module dispence(
 input				reset,
 input				clk,
@@ -9,10 +17,6 @@ input				ack,
 output	reg			hold,
 input		[7:0]	coins,
 output	reg			subtract,
-output	reg			gum_dispence,
-output	reg			candy_dispence,
-output	reg			cookies_dispence,
-output	reg			chips_dispence,
 output	reg			done);
 reg			[3:0]	state;
 parameter			IDLE = 0,
@@ -25,10 +29,6 @@ parameter			IDLE = 0,
 					WAIT = 7;
 initial begin
 	subtract = 0;
-	gum_dispence = 0;
-	candy_dispence = 0;
-	cookies_dispence = 0;
-	chips_dispence = 0;
 	done = 0;
 end
 always @ (posedge clk or posedge reset)
@@ -88,7 +88,7 @@ begin
 		end
 		DONE:
 		begin
-		state = IDLE;
+		state = state;
 		end
 		default:
 		begin
@@ -102,91 +102,56 @@ begin
 		IDLE:
 		begin
 		subtract = 0;
-		gum_dispence = 0;
-		candy_dispence = 0;
-		cookies_dispence = 0;
-		chips_dispence = 0;
 		done = 0;
 		hold = 0;
 		end
 		GUM:
 		begin
 		subtract = 0;
-		gum_dispence = 1;
-		candy_dispence = 0;
-		cookies_dispence = 0;
-		chips_dispence = 0;
 		done = 0;
 		hold = 0;
 		end
 		CANDY:
 		begin
 		subtract = 0;
-		gum_dispence = 0;
-		candy_dispence = 1;
-		cookies_dispence = 0;
-		chips_dispence = 0;
 		done = 0;
 		hold = 0;
 		end
 		COOKIES:
 		begin
 		subtract = 0;
-		gum_dispence = 0;
-		candy_dispence = 0;
-		cookies_dispence = 1;
-		chips_dispence = 0;
 		done = 0;
 		hold = 0;
 		end
 		CHIPS:
 		begin
 		subtract = 0;
-		gum_dispence = 0;
-		candy_dispence = 0;
-		cookies_dispence = 0;
-		chips_dispence = 1;
 		done = 0;
 		hold = 0;
 		end
 		WAIT:
 		begin
 		subtract = 0;
-		gum_dispence = gum_dispence;
-		candy_dispence = candy_dispence;
-		cookies_dispence = cookies_dispence;
-		chips_dispence = chips_dispence;
 		done = 0;
 		hold = 1;
 		end
 		SUB:
 		begin
 		subtract = 1;
-		gum_dispence = gum_dispence;
-		candy_dispence = candy_dispence;
-		cookies_dispence = cookies_dispence;
-		chips_dispence = chips_dispence;
 		done = 0;
 		hold = 0;
 		end
 		DONE:
 		begin
 		subtract = 0;
-		gum_dispence = 0;
-		candy_dispence = 0;
-		cookies_dispence = 0;
-		chips_dispence = 0;
 		done = 1;
 		hold = 0;
 		end
 		default:
 		begin
 		subtract = 0;
-		gum_dispence = 0;
-		candy_dispence = 0;
-		cookies_dispence = 0;
-		chips_dispence = 0;
 		hold = 0;
+		done = 0;
 		end
 		endcase
 	

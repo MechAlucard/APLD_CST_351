@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: vending_machine
+// Module Name: vending_machine
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: module to control and wrap up the state machines
 module vending_machine(
 input			cookies,
 input			candy,
@@ -9,106 +17,146 @@ input			dollar,
 input			quarter,
 input			dime,
 input			nickel,
-output			d_cookies,
-output			d_candy,
-output			d_chips,
-output			d_gum,
 output			c_nickel,
 output			c_dime,
 output			c_quarter,
-output			done,
+output	reg		done,
 output	[7:0]	coins);
-reg		[8:0]	count;
+reg		[10:0]	count;
 reg				ret_clk;
-wire	add_w;
-wire	dollar_w;
-wire	quarter_w;
-wire	nickel_w;
-wire	dime_w;
-wire	trombe;
-wire			alt_esin;
-wire			disp_done_w;
+wire			add_w;
+wire			dollar_w;
+wire			quarter_w;
+wire			nickel_w;
+wire			dime_w;
 wire			sub_w;
-wire			hold_w;
+reg				accept_rst;
+reg				return_rst;
+reg				start_ret;
+wire			hold;
 reg				ack;
-reg				coin_acept;
-reg				final_beam;
-reg 	[1:0]	state;
-parameter		COIN_ADD = 0,
-				COIN_DEC = 1,
-				COIN_RET = 2;
+reg				master_rst;
+wire			dec_done;
+wire			ret_done;	
+wire			active;	
+reg		[2:0]	state;
 initial begin
-state = 0;
-final_beam = 0;
 ret_clk = 0;
 count = 0;
+state = 0;
+accept_rst =0;
+return_rst =0;
+start_ret =0;
 ack = 0;
-coin_acept = 0;
+master_rst =0;
 end
-assign done = disp_done_w;
-always @ (posedge clk)
+parameter		START = 0,
+				RESET = 1,
+				COIN_IN = 2,
+				VEND = 3,
+				CHANGE = 4,
+				DONE = 5;
+always @ (negedge clk)
 begin
 	case(state)
-	COIN_ADD:
-	begin
-	if(rst)
-		state = COIN_RET;
-	else if(hold_w)
-		state = COIN_DEC;
-	else
-		state = state;
-	end
-	COIN_DEC:
-	begin
-	if(disp_done_w | trombe)
-		state = COIN_ADD;
-	else
-		state = state;
-	end
-	COIN_RET:
-	begin
-	if(alt_esin)
-		state = state;
-	else
-		state = COIN_ADD;
-	end
+	START:
+		state = RESET;
+	RESET:
+		state = COIN_IN;
+	COIN_IN:
+		if(rst)
+			state = CHANGE;
+		else if(hold)
+			state = VEND;
+		else
+			state = state;
+	VEND:
+		if(dec_done)
+			state = CHANGE;
+		else
+			state = state;
+	CHANGE:
+		if(ret_done)
+			state = DONE;
+		else
+			state = state;
+	DONE:
+		state = START;
 	default:
-	state = state;
+		state = START;
 	endcase
 end
 always @ (*)
 begin
 	case(state)
-	COIN_ADD:
+	START:
 	begin
-	final_beam = 0;
+	start_ret = 0;
+	return_rst = 0;
+	accept_rst = 0;
 	ack = 0;
-	coin_acept = 0;
-	end
-	COIN_DEC:
+	master_rst = 0;
+	done = 0;
+	end 
+	RESET:
 	begin
-	final_beam = 0;
+	start_ret = 0;
+	return_rst = 0;
+	accept_rst = 0;
+	ack = 0;
+	master_rst = 1;
+	done = 0;
+	end
+	COIN_IN:
+	begin
+	start_ret = 0;
+	return_rst = 1;
+	accept_rst = 0;
+	ack = 0;
+	master_rst = 0;
+	done = 0;
+	end
+	VEND:
+	begin
+	start_ret = 0;
+	return_rst = 0;
+	accept_rst = 1;
 	ack = 1;
-	coin_acept = 1;
+	master_rst = 0;
+	done = 0;
 	end
-	COIN_RET:
+	CHANGE:
 	begin
-	final_beam = 1;
+	start_ret = 1;
+	return_rst = 0;
+	accept_rst = 1;
 	ack = 0;
-	coin_acept = 1;
+	master_rst = 0;
+	done = 0;
+	end
+	DONE:
+	begin
+	start_ret = 0;
+	return_rst = 0;
+	accept_rst = 0;
+	ack = 0;
+	master_rst = 0;
+	done = 1;
 	end
 	default:
 	begin
-	final_beam = final_beam;
-	coin_acept = coin_acept;
-	ack = ack;
+	start_ret = 0;
+	return_rst = 0;
+	accept_rst = 0;
+	ack = 0;
+	master_rst = 0;
+	done = 0;
 	end
 	endcase
 end
-
 always @ (posedge clk)
 begin
-	if(count >= 500)
+	if(count >= 2000)
 	begin
 	count = 0;
 	ret_clk = ~ret_clk;
@@ -119,14 +167,13 @@ begin
 	end
 end
 
-
 coin_reg U0(
-.reset(trombe|alt_esin),
+.reset(master_rst),
 .add(add_w|sub_w),
-.gum(d_gum),
-.candy(d_candy),
-.cookies(d_cookies),
-.chips(d_chips),
+.gum(gum),
+.candy(candy),
+.cookies(cookies),
+.chips(chips),
 .quarter(quarter_w),
 .nickel(nickel_w),
 .dime(dime_w),
@@ -136,17 +183,17 @@ coin_reg U0(
 coin_return U1(
 .coins(coins),
 .clk(ret_clk),
-.start(final_beam|disp_done_w),
-.reset(trombe),
-.active(alt_esin),
+.start(start_ret),
+.reset(return_rst|master_rst),
+.active(active),
 .quarter_return(c_quarter),
 .dime_return(c_dime),
 .nickel_return(c_nickel),
-.done(trombe)
+.done(ret_done)
 );
 
 coin_accepter U2(
-.reset(final_beam|trombe|alt_esin|coin_acept),
+.reset(accept_rst|master_rst),
 .clk(clk),
 .quarter_in(quarter),
 .dime_in(dime),
@@ -161,7 +208,7 @@ coin_accepter U2(
 );
 
 dispence U4(
-.reset(final_beam|trombe|alt_esin),
+.reset(rst|master_rst),
 .clk(clk),
 .gum(gum),
 .candy(candy),
@@ -169,13 +216,9 @@ dispence U4(
 .chips(chips),
 .coins(coins),
 .subtract(sub_w),
-.gum_dispence(d_gum),
-.candy_dispence(d_candy),
-.cookies_dispence(d_cookies),
-.chips_dispence(d_chips),
-.done(disp_done_w),
+.done(dec_done),
 .ack(ack),
-.hold(hold_w)
+.hold(hold)
 );
-
 endmodule
+

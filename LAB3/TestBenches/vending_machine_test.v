@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: Vending_machine_test
+// Module Name: Vending_machine_test
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: tests the workings of the vending machine
 `timescale 1 ns /100 ps
 module vending_machine_test;
 reg			cookies;
@@ -10,15 +18,11 @@ reg			dollar;
 reg			quarter;
 reg			dime;
 reg			nickel;
-wire			d_cookies;
-wire			d_candy;
-wire			d_chips;
-wire			d_gum;
 wire			c_nickel;
 wire			c_dime;
 wire			c_quarter;
 wire	[7:0]	coins;	
-
+wire			done;
 vending_machine DUT(
 .cookies(cookies),
 .candy(candy),
@@ -30,14 +34,11 @@ vending_machine DUT(
 .quarter(quarter),
 .dime(dime),
 .nickel(nickel),
-.d_cookies(d_cookies),
-.d_candy(d_candy),
-.d_chips(d_chips),
-.d_gum(d_gum),
 .c_nickel(c_nickel),
 .c_dime(c_dime),
 .c_quarter(c_quarter),
-.coins(coins));
+.coins(coins),
+.done(done));
 always #10 clk = ~clk;
  initial begin
 cookies = 0;

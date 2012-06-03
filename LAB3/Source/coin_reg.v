@@ -1,3 +1,11 @@
+// Oregon Institute of Technology 
+// Engineer: Tyler Martin
+// Create Date: 06/04/2012 
+// Design Name: Coin_reg
+// Module Name: coin_reg
+// Project Name: CST 351 – Lab 3
+// Target Devices: EPM2210F324C3N
+// Description: adds and subtracts coin and product values from the reg
 module coin_reg(
 input				reset,
 input				add,
